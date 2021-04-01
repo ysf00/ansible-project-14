@@ -1,0 +1,40 @@
+---
+- name: install apache and other modules
+  apt:
+    name:
+      - apache2
+      - libxml2-dev
+    state: present
+- name: remove index file
+  file:
+    path: /etc/apache2/sites-available/000-default.conf
+    state: absent
+
+- name: Enabling the modules
+  apache2_module: 
+    name: "{{ item }}"
+    state: present    
+  with_items:
+      - rewrite
+      - proxy
+      - proxy_balancer
+      - proxy_http
+      - headers
+      - lbmethod_bytraffic
+  notify: Restart apache2
+
+- name: copy conf file
+  template:
+    src: debian_apache.conf
+    dest: /etc/apache2/sites-available
+  notify: Restart apache2
+
+- name: Enable New site
+  command: /usr/sbin/a2ensite debian_apache.conf
+  notify: Restart apache2
+
+- name: Enable apache
+  service:
+    name: apache2
+    state: started
+    enabled: yes

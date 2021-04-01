@@ -1,0 +1,68 @@
+---
+- name: Create Document root
+  file:
+    path: /var/www
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+    
+- name: Install Redhat Packages
+  yum:
+    name:
+      - php*
+      - httpd
+      - git
+      - mysql
+    state: present
+
+- name: Copy the code from github
+  git:
+    repo: https://github.com/ysf00/Tooling-Website.git
+    dest: /var/www/html/tooling
+    force: yes
+
+- name: change permission
+  file:
+    path: /var/www/html
+    state: directory
+    owner: apache
+    group: apache
+    mode: 0755
+    recurse: yes
+
+- name: change permission httpd
+  file:
+    path: /var/log/httpd
+    state: directory
+    owner: apache
+    group: apache
+    mode: 0755
+    recurse: yes
+
+- name: copy conf file
+  template:
+    src: default_vhost.conf.j2
+    dest: /etc/httpd/conf/httpd.conf
+  notify: Restart Httpd
+
+- name: move conf file
+  template:
+    src: welcome.conf
+    dest: /etc/httpd/conf.d/welcome.conf
+  notify: Restart Httpd
+
+- name: Allow network
+  command: /usr/sbin/setsebool -P httpd_can_network_connect 1
+
+- name: Allow network
+  command: /usr/sbin/setsebool -P httpd_can_network_connect_db 1
+
+- name: Allow network
+  command: /usr/sbin/setsebool -P httpd_read_user_content 1
+
+- name: Enable Httpd
+  service:
+    name: httpd
+    state: started
+    enabled: yes

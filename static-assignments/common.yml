@@ -1,0 +1,18 @@
+---
+## UPDATE ALL SERVERS
+- hosts: all
+  become: true
+  tasks:
+
+  - name: install update on RHEL based distros
+    yum:
+      name: '*'
+      state: latest
+    when: ansible_os_family == 'RedHat'
+
+  - name: install update on Debian based distros 
+    apt:
+      update_cache: yes
+      state: latest
+    become: true
+    when: ansible_os_family == 'Debian'

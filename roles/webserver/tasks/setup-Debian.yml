@@ -1,0 +1,68 @@
+---
+- name: Create Document root
+  file:
+    path: /var/www
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Install Debian Packages
+  apt:
+    name:
+      - php
+      - apache2
+      - git
+      - libapache2-mod-php
+      - php-mysqli
+      - mysql-client
+    state: present
+
+- name: Copy the code from github
+  git:
+    repo: https://github.com/ysf00/Tooling-Website.git
+    dest: /var/www/html/tooling
+    force: yes
+
+- name: remove index file
+  file:
+    path: /var/www/html/index.html
+    state: absent
+
+- name: change permission
+  file:
+    path: /var/www/html/tooling
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: 0755
+    recurse: yes
+
+- name: change permission apache2
+  file:
+    path: /var/log/apache2
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: 0755
+    recurse: yes
+
+- name: copy conf file
+  template:
+    src: default_apache.conf
+    dest: /etc/apache2/sites-available
+  notify: Restart Apache
+
+- name: Enable New site
+  command: /usr/sbin/a2ensite default_apache.conf
+  notify: Reload Apache
+
+- name: Disable default page
+  command: /usr/sbin/a2dissite 000-default.conf
+  notify: Reload Apache
+
+- name: Enable Apache
+  service:
+    name: apache2
+    state: started
+    enabled: yes

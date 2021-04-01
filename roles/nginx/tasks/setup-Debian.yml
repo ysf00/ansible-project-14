@@ -1,0 +1,31 @@
+---
+- name: install Nginx
+  apt: 
+    name: nginx
+    state: present
+
+- name: copy conf file
+  template:
+    src: deb_nginx.conf
+    dest: /etc/nginx/sites-available
+  notify: Restart nginx
+
+- name: Disable default page
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: Disable default page
+  file:
+    path: /etc/nginx/sites-enabled/deb_nginx.conf
+    state: absent
+
+- name: Enable New site
+  command: ln -s /etc/nginx/sites-available/deb_nginx.conf /etc/nginx/sites-enabled
+  notify: Restart nginx
+
+- name: Nginx start at boot time
+  service:
+    name: nginx
+    state: started
+    enabled: yes

@@ -1,0 +1,30 @@
+---
+- name: Install httpd on server
+  yum:
+    name: httpd
+    state: present
+
+- name:  copy config file
+  template:
+    src: redhat_apache.conf
+    dest: /etc/httpd/conf.d
+  notify: Reload httpd
+
+- name: change permission httpd
+  file:
+    path: /var/log/httpd
+    state: directory
+    owner: apache
+    group: apache
+    mode: 0755
+    recurse: yes
+
+- name: Allow network
+  command: /usr/sbin/setsebool -P httpd_can_network_connect 1
+  notify: Reload httpd
+    
+- name: Enable httpd
+  service:
+    name: httpd
+    state: started
+    enabled: yes
