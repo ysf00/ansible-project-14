@@ -2,11 +2,11 @@
 - name: Include dynamic updates
   hosts: all 
   tasks:
-    - Include: ../dynamic-assignments/env-vars.yml
+    - include: ../dynamic-assignments/env-vars.yml
   tags:
     - always
 
 - import_playbook: ../static-assignments/common.yml
 - import_playbook: ../static-assignments/webservers.yml
+#- import_playbook: ../static-assignments/mysql.yml
 - import_playbook: ../static-assignments/ci.yml
-- import_playbook: ../static-assignments/mysql.yml
