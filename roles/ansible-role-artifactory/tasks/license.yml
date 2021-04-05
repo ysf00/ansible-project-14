@@ -1,0 +1,15 @@
+---
+- name: "Insert Artifactory Lisence variable into -> {{ artifactory_conf_dir }}/artifactory.lic"
+  copy:
+    content: "{{ artifactory_lisence }}" 
+    dest: "{{ artifactory_conf_dir }}/artifactory.lic"
+    owner: "{{ artifactory_user }}"
+    group: "{{ artifactory_group }}"
+    mode: 0744
+  register: lic
+
+#- name: "Restart on License change"
+#  service:
+#    name: artifactory
+#    state: restarted
+#  when: lic.changed

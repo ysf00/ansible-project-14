@@ -1,0 +1,66 @@
+---
+# defaults file for artifactory-ansible-role
+artifactory_flavor: pro
+artifactory_version: 5.2.1
+artifactory_user: artifactory
+artifactory_group: artifactory
+artifactory_runtime_dir: /opt/jfrog/artifactory/
+artifactory_home_dir: /opt/artifactory/
+artifactory_conf_dir: /etc/opt/jfrog/artifactory/
+artifactory_tomcat_dir: "{{ artifactory_runtime_dir }}/tomcat/"
+artifactory_tomcat_dir_dare: "/opt/jfrog/artifactory/tomcat/"
+artifactory_yum_repo_url_pro: "https://bintray.com/jfrog/artifactory-pro-rpms/rpm"
+artifactory_yum_repo_url_oss: "https://bintray.com/jfrog/artifactory-rpms/rpm"
+artifactory_repo_file: "bintray-jfrog-artifactory-pro-rpms.repo"
+#artifactory_url: "https://bintray.com/jfrog/artifactory-{{artifactory_flavor}}/download_file?file_path=org/artifactory/{{artifactory_flavor}}/jfrog-artifactory-{{artifactory_flavor}}/{{artifactory_version}}/jfrog-artifactory-{{artifactory_flavor}}-{{artifactory_version}}.zip"
+#artifactory_file: "artifactory-{{artifactory_version}}.zip"
+
+artifactory_database_engine: mariadb
+#artifactory_database_engine: mysql
+
+artifactory_mysql_jdbc_base: "mysql-connector-java-5.1.42"
+artifactory_mysql_jdbc_url: "https://dev.mysql.com/get/Downloads/Connector-J/{{artifactory_mysql_jdbc_base}}.tar.gz"
+#                            "https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.41.tar.gz"
+artifactory_create_db: true
+artifactory_db_root_user: "{{ db_root_user | d('root') }}"
+artifactory_db_root_pass: "{{ db_root_pass | d('Changem3') }}"
+artifactory_db_name:      "{{ db_name | d('arti') }}"
+artifactory_db_user:      "{{ db_user | d('arti') }}"
+artifactory_db_pass:      "{{ db_pass | d('arti') }}"
+artifactory_db_host:      "{{ db_host | d('127.0.0.1') }}"
+artifactory_db_port:      "{{ db_port | d('3306') }}"
+artifactory_db_encoding:  "{{ db_encoding | d('utf8') }}"
+
+# nginx related
+artifactory_reverse_proxy: false
+artifactory_http_port: 8081
+artifactory_ajp_port: 8019
+artifactory_https_port: 443
+artifactory_proxy_port: 80
+artifactory_host_name: "{{ inventory_hostname }}"
+artifactory_max_artifact_size: '5120M'
+
+# ssl related
+artifactory_ssl: false
+artifactory_ssl_key:  artifactory.key # see files/...
+artifactory_ssl_cert: artifactory.crt # see files/...
+# files should be there during deployment ...
+artifactory_ssl_cert_dir: /etc/ssl/certs/
+artifactory_ssl_key_dir: /etc/ssl/private/
+#artifactory_ssl_cert_filename: "{{ inventory_hostname }}.crt"
+#artifactory_ssl_key_filename:  "{{ inventory_hostname }}.key"
+artifactory_ssl_country: IL
+artifactory_ssl_state: Israel
+artifactory_ssl_org: DevOps
+artifactory_ssl_location: Tel-Aviv
+artifactory_ssl_expiary: 3650
+
+
+
+
+artifactory_docker_enabled: false
+artifactory_docker_listen_port: '8008'
+
+artifactory_pip_requirements: []
+
+#artifactory_custom_filestore_dir: 

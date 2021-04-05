@@ -1,0 +1,6 @@
+---
+- hosts: jenkins
+  roles:
+    - java
+    - jenkins
+  become: true

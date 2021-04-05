@@ -1,0 +1,72 @@
+---
+- name: "Install nginx"
+  package:
+    name: nginx
+    state: installed
+
+- name: "create private key directory"
+  file:
+    state: directory
+    path: "{{ artifactory_ssl_key_dir }}"
+    mode: 0700
+
+- name: "Get selinux status"
+  shell: "sestatus"
+  register: sl_out
+
+- name: "Set se_enabled to true if sl_out"
+  set_fact:
+    se_enabled: true
+  when: ('"disabled" in sl_out')
+
+- name: "Set se_enabled to false if not sl_out"
+  set_fact:
+    se_enabled: false
+  when: ('"disabled" not in sl_out')
+
+  # Set (httpd_can_network_connect) flag on and keep it persistent across reboots
+- name: "Tweak se-linux to allow nginx reverse proxy"
+  seboolean:
+    name: httpd_can_network_connect
+    state: yes
+    persistent: yes
+  when: se_enabled
+
+- name: "Check ssl key"
+  stat:
+    path: "{{ artifactory_ssl_key_dir }}/{{ artifactory_ssl_key }}"
+  register: key
+  when: artifactory_ssl
+
+- name: "Check ssl cert"
+  stat:
+    path: "{{ artifactory_ssl_cert_dir }}/{{ artifactory_ssl_cert }}"
+  register: cert
+  when: artifactory_ssl
+
+- name: "Creating self-signed server SSL cert"
+  shell: "openssl req -new \
+      -x509 \
+      -nodes \
+      -extensions v3_ca \
+      -days {{ artifactory_ssl_expiary }} \
+      -subj \"/C={{ artifactory_ssl_country }}/ST={{ artifactory_ssl_state }}/L={{ artifactory_ssl_location }}/O={{ artifactory_ssl_org }}/OU={{ artifactory_ssl_org }}/CN={{ inventory_hostname }}\" \
+      -keyout {{ artifactory_ssl_key_dir }}/{{ artifactory_ssl_key }} \
+      -out {{ artifactory_ssl_cert_dir }}/{{ artifactory_ssl_cert }}"
+  when: ((artifactory_ssl) and (not key.stat.exists or not cert.stat.exists))
+
+- name: "nginx | Artifactory vhost configuration"
+  template:
+    src: "artifactory-nginx.conf.j2"
+    dest: "/etc/nginx/conf.d/default.conf"
+
+- name: "nginx | global configuration"
+  template:
+    src: "nginx.conf.j2"
+    dest: "/etc/nginx/nginx.conf"
+
+- name: "start & enable service"
+  service:
+    name: nginx
+    state: restarted
+    enabled: yes

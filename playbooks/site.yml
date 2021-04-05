@@ -1,26 +1,12 @@
 ---
-- hosts: all 
+- name: Include dynamic updates
+  hosts: all 
+  tasks:
+    - Include: ../dynamic-assignments/env-vars.yml
+  tags:
+    - always
+
 - import_playbook: ../static-assignments/common.yml
-- import_playbook: ../dynamic-assignments/env-vars.yml
-
-
-- hosts: webservers
-- name: Webserver assignment
-  import_playbook: ../static-assignments/webservers.yml
-
-- hosts: nfs
-- name: NFS assignment
-  import_playbook: ../static-assignments/nfs.yml
-
-- hosts: lb
-- name: Letsencrypt assignment
-  import_playbook: ../static-assignments/certbot.yml
-  
-- hosts: lb
-- name: Loadbalancers assignment
-  import_playbook: ../static-assignments/loadbalancers.yml
-  when: load_balancer_is_required 
-
-- hosts: db
-- name: Mysql assignment
-  import_playbook: ../static-assignments/mysql.yml
+- import_playbook: ../static-assignments/webservers.yml
+- import_playbook: ../static-assignments/ci.yml
+- import_playbook: ../static-assignments/mysql.yml

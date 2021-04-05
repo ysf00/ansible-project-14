@@ -1,0 +1,20 @@
+---
+
+- service:
+    name: artifactory
+    state: stopped
+  ignore_errors: true
+
+- package:
+    name: jfrog-artifactory-pro
+    state: absent
+
+- file:
+    state: absent
+    path: "{{ item }}"
+  with_items: 
+    - "{{ artifactory_runtime_dir }}"
+    - "/var/opt/jfrog/artifactory/"
+    - "/etc/opt/jfrog/artifactory/"
+         
+

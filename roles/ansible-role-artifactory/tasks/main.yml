@@ -1,0 +1,48 @@
+---
+# tasks file for artifactory-ansible-role
+
+- name: "include Debain / Redhat OS vars"
+  include_vars: "{{ ansible_os_family }}.yml"
+
+- name: "include flavor-specific vars"
+  include_vars: "{{ artifactory_flavor }}.yml"
+
+- include: "purge.yml"
+  when: purge is defined
+
+- include: "purge-db.yml"
+  when: purge_db is defined
+
+- include: "validate-java.yml"
+- include: "verify-installation.yml"
+- include: "install-reqs.yml"
+- include: "install-{{ artifactory_flavor }}.yml"
+- include: "config-tomcat.yml"
+- include: "config-filestore.yml"
+  when: not(
+           ( artifactory_custom_filestore_dir is undefined)
+        or ( artifactory_custom_filestore_dir is none) 
+        or ( artifactory_custom_filestore_dir |trim == '')
+           )
+
+- include: "license.yml"
+  when: (artifactory_lisence is defined) and (artifactory_flavor == 'pro')
+  tags: license
+
+- include: "mysql.yml"
+  when: (artifactory_create_db) and (artifactory_database_engine == 'mysql' or artifactory_database_engine == 'mariadb')
+
+- include: "nginx.yml"
+  when: artifactory_reverse_proxy
+
+- name: "Resigter Artifactory-{{ artifactory_flavor }}"
+  service: 
+    name: artifactory 
+    state: started
+    enabled: true
+
+- name: "Wait for artifactory port to come up"
+  wait_for:
+    port: 8081
+    timeout: 60
+    host: 0.0.0.0

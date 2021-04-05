@@ -1,0 +1,6 @@
+---
+artifactory_system_reqs:
+  - unzip
+  - zip
+  - policycoreutils-python
+#  - setools-libs-python
