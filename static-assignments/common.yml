@@ -1,6 +1,6 @@
 ---
 ## UPDATE ALL SERVERS
 - hosts: all
-  become: true
   roles:
     - common
+  become: true
