@@ -7,7 +7,6 @@ pipeline {
 
     parameters {
       string(name: 'inventory_file', defaultValue: 'dev')
-      string(name: 'ansible_tag', defaultValue: '')
     }
 
   stages {
