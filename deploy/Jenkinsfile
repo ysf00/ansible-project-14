@@ -35,7 +35,7 @@ pipeline {
     stage('Run Ansible') {
       steps {
 
-            ansiblePlaybook become: true, colorized: true, credentialsId: 'ansible', disableHostKeyChecking: true, installation: 'Ansible', inventory: "inventory/${inventory_file}", playbook: 'playbooks/site.yml', tags: '${ansible_tag}'
+            ansiblePlaybook become: true, colorized: true, credentialsId: 'test-sg', disableHostKeyChecking: true, installation: 'Ansible', inventory: "inventory/${inventory_file}", playbook: 'playbooks/site.yml', tags: '${ansible_tag}'
       }
     }
     
