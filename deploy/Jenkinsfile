@@ -1,48 +1,46 @@
 pipeline {
     agent any
 
-
-      stages {
-        stage('Build') {
-          steps {
-            script {
-              sh 'echo "Building Stage"'
-            }
-          }
-        }
-
-
-        stage('Test') {
-          steps {
-            script {
-              sh 'echo "Testing Stage"'
-            }
-          }
-        }
-
-        stage('Package') {
-          steps {
-            script {
-              sh 'echo "Package Stage"'
-            }
-          }
-        }
-
-        stage('Deploy') {
-          steps {
-            script {
-              sh 'echo "Deploy Stage"'
-            }
-          }
-        }
-
-        stage('Clean Up') {
-          steps {
-            script {
-              sh 'echo "Clean Up Stage"'
-            }
-          }
-        }
-
+ environment {
+      ANSIBLE_CONFIG="${WORKSPACE}/deploy/ansible.cfg"
     }
+
+    parameters {
+      string(name: 'inventory_file', defaultValue: 'dev')
+      string(name: 'ansible_tag', defaultValue: '')
+    }
+
+  stages {
+      
+    stage("Initial cleanup") {
+          steps {
+            dir("${WORKSPACE}") {
+              deleteDir()
+            }
+          }
+        }
+  
+    stage('SCM Checkout ') {
+      steps {
+            git branch: 'main', url: 'https://github.com/ysf00/ansible-project-14.git'
+      }
+    }
+
+    stage('Prepare Ansible For Execution') {
+      steps {
+          sh 'echo ${WORKSPACE}'
+          sh 'sed -i \'s/roles_path = \\/var\\/lib\\/jenkins\\/workspace/roles_path = \\/var\\/lib\\/jenkins\\/workspace\\/ansible-project-14_main\\/roles /g\' deploy/ansible.cfg'
+      }
+    }
+               
+    stage('Run Ansible') {
+      steps {
+
+            ansiblePlaybook become: true, colorized: true, credentialsId: 'ansible', disableHostKeyChecking: true, installation: 'Ansible', inventory: "inventory/${inventory_file}", playbook: 'playbooks/site.yml', tags: '${ansible_tag}'
+      }
+    }
+    
+
+    
+  }
 }
