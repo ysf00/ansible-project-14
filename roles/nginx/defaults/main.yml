@@ -6,7 +6,6 @@ nginx_revproxy_sites:                                         # List of sites to
     proxy_read_timeout: "360"
     domains:                                                  # List of server_name aliases
       - animals4mind.org
-      - www.animals4mind.org
     upstreams:                                                # List of Upstreams
       - {backend_address: 54.87.210.19, backend_port: 80}
       
