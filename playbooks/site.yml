@@ -10,3 +10,4 @@
 - import_playbook: ../static-assignments/webservers.yml
 - import_playbook: ../static-assignments/mysql.yml
 - import_playbook: ../static-assignments/ci.yml
+- import_playbook: ../static-assignments/nginx.yml
