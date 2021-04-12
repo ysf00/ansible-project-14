@@ -1,5 +1,5 @@
 ---
 - hosts: nginx
   roles:
-    - ansible-nginx-revproxy
+    - nginx
   become: true
