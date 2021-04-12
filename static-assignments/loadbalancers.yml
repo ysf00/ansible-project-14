@@ -1,6 +1,0 @@
----
-- hosts: lb
-  become: true
-  roles:
-    - nginx
-
