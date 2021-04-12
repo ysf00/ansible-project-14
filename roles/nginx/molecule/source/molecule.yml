@@ -44,5 +44,5 @@ platforms:
 provisioner:
   name: ansible
   playbooks:
-    converge: ../common/playbooks/default_converge.yml
-    verify: ../common/playbooks/default_verify.yml
+    converge: ../common/playbooks/source_converge.yml
+    verify: ../common/playbooks/source_verify.yml

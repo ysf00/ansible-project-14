@@ -1,100 +1,182 @@
-ansible-role-nginx_revproxy
-=========
+[![Ansible Galaxy](https://img.shields.io/badge/galaxy-nginxinc.nginx-5bbdbf.svg)](https://galaxy.ansible.com/nginxinc/nginx)
+[![Molecule CI/CD](https://github.com/nginxinc/ansible-role-nginx/workflows/Molecule%20CI/CD/badge.svg)](https://github.com/nginxinc/ansible-role-nginx/actions)
+[![License](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-Install and configures Nginx as reverse proxy for multiple website.
+# 👾 *Help make the NGINX Ansible role better by participating in our [survey](https://forms.office.com/Pages/ResponsePage.aspx?id=L_093Ttq0UCb4L-DJ9gcUKLQ7uTJaE1PitM_37KR881UM0NCWkY5UlE5MUYyWU1aTUcxV0NRUllJSC4u)!* 👾
 
-|GitHub|Quality|Downloads|Galaxy|Version|
-|------|-------|---------|-------|-------|
-|[![CI](https://github.com/hispanico/ansible-role-nginx_revproxy/actions/workflows/ci.yml/badge.svg)](https://github.com/hispanico/ansible-role-nginx_revproxy/actions/workflows/ci.yml)|[![quality](https://img.shields.io/ansible/quality/53382)](https://galaxy.ansible.com/hispanico/nginx_revproxy)|[![downloads](https://img.shields.io/ansible/role/d/53382)](https://galaxy.ansible.com/hispanico/nginx_revproxy)|[![Galaxy](https://img.shields.io/badge/galaxy-hispanico.nginx_revproxy-blue.svg)](https://galaxy.ansible.com/hispanico/nginx_revproxy)|[![Version](https://img.shields.io/github/release/hispanico/ansible-role-nginx_revproxy.svg)](https://github.com/hispanico/ansible-role-nginx_revproxy/releases/)|
+# Ansible NGINX Role
 
-Requirements
-------------
+This role installs NGINX Open Source, NGINX Plus, or the NGINX Amplify agent on your target host.
 
-This role requires Ansible 2.4 or higher.
+**Note:** This role is still in active development. There may be unidentified issues and the role variables may change as development continues.
 
-Role Variables
---------------
+**Deprecation Warnings:**
 
-Default values:
+With the advent of Ansible collections and the release of the [NGINX Core Ansible collection](https://github.com/nginxinc/ansible-collection-nginx), the decision has been made to split this role into three smaller roles and reduce the overhead of this role:
+*   The NGINX Ansible role will keep working as is and be used to install and setup NGINX.
+*   **The NGINX configuration functionalities included in this role have been removed as of release 0.19.0.** There now is a separate role to manage and create NGINX configurations available [here](https://github.com/nginxinc/ansible-role-nginx-config). Any new issues or PRs related to configuring NGINX should be submitted in the new NGINX configuration Ansible role repository. New issues or PRs related to configuring NGINX submitted in this repository will not be worked on. This disclaimer will be removed in a future release.
+*   **The NGINX Unit functionalities included in this role have been removed as of release 0.18.0.** There now is a separate role to install NGINX Unit available [here](https://github.com/nginxinc/ansible-role-nginx-unit). Any new issues or PRs related to NGINX Unit should be submitted in the new NGINX Unit Ansible role repository. New issues or PRs related to NGINX Unit submitted in this repository will not be worked on. This disclaimer will be removed in a future release.
 
-```yaml
-nginx_revproxy_sites:                                         # List of sites to reverse proxy
-  default:                                                    # Set default site to return 444 (Connection Closed Without Response)
-    ssl: false                                                # Set to True if you want to redirect http to https
-    letsencrypt: false
+## Requirements
 
-  example.com:                                                # Domain name
-    domains:                                                  # List of server_name aliases
-      - example.com
-      - www.example.com
-    upstreams:                                                # List of Upstreams
-      - { backend_address: 192.168.0.100, backend_port: 80 }
-      - { backend_address: 192.168.0.101, backend_port: 8080 }
-    auth:                                                     # Define this block for a single HTTP user/password, or leave undefined for unauthenticated vhosts
-      login: myusername
-      password: mysecretpassword
-    listen: 9000                                              # Specify which port you want to listen to with clear HTTP, or leave undefined for 80
-    ssl: false                                                # Set to True if you want to redirect http to https
-    letsencrypt: false                                        # Set to True if you want to use letsencrypt
-    conn_upgrade: true                                        # Set the Connection upgrade header values
+### Ansible
 
-  example.org:                                                # Domain name
-    domains:                                                  # List of server_name aliases
-      - example.org
-      - www.example.org
-    upstreams:                                                # List of Upstreams
-      - { backend_address: 192.168.0.200, backend_port: 80 }
-      - { backend_address: 192.168.0.201, backend_port: 8080 }
-    listen: 9000                                              # Specify which port you want to listen to with clear HTTP, or leave undefined for 80
-    listen_ssl: 9001                                          # Specify which port you want to listen to with HTTPS, or leave undefined for 443
-    ssl: true                                                 # Set to True if you want to redirect http to https
-    ssl_certificate: /etc/ssl/certs/ssl-cert-snakeoil.pem     # ssl certificate, used if letsencrypt is false
-    ssl_certificate_key: /etc/ssl/private/ssl-cert-snakeoil.key # ssl certificate key, used if letsencrypt is false
-    letsencrypt: false                                        # Set to True if you want use letsencrypt
-    letsencrypt_email: ""                                     # Set email for letencrypt cert
+*   This role is developed and tested with [maintained](https://docs.ansible.com/ansible/latest/reference_appendices/release_and_maintenance.html#release-status) versions of Ansible. Backwards compatibility is not guaranteed.
+*   Instructions on how to install Ansible can be found in the [Ansible website](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html).
 
-nginx_revproxy_certbot_auto: false                             # Set to true to install certbot-auto
+### Molecule
 
-nginx_revproxy_certbot_packages:                              # Install these packages from repo, when not using certbot-auto
-  - certbot
-  - python3-certbot-nginx
-```
+*   Molecule `3.x` is used to test the various functionalities of the role.
+*   Instructions on how to install Molecule can be found in the [Molecule website](https://molecule.readthedocs.io/en/latest/installation.html).
 
-Dependencies
-------------
+## Installation
 
-None.
+### Ansible Galaxy
 
-Example Playbook
-----------------
+Use `ansible-galaxy install nginxinc.nginx` to install the latest stable release of the role on your system.
+
+### Git
+
+Use `git clone https://github.com/nginxinc/ansible-role-nginx.git` to pull the latest edge commit of the role from GitHub.
+
+## Platforms
+
+The NGINX Ansible role supports all platforms supported by [NGINX Open Source](https://nginx.org/en/linux_packages.html), [NGINX Plus](https://docs.nginx.com/nginx/technical-specs/), and the [NGINX Amplify agent](https://github.com/nginxinc/nginx-amplify-doc/blob/master/amplify-faq.md#21-what-operating-systems-are-supported):
+
+### NGINX Open Source
 
 ```yaml
-  - hosts: all
-    roles:
-      - hispanico.nginx_revproxy
-    vars:
-      nginx_revproxy_sites:
-        default:
-          ssl: false
-          letsencrypt: false
-
-        example.com:
-          domains:
-            - example.com
-            - www.example.com
-          upstreams:
-            - { backend_address: 192.168.0.100, backend_port: 80 }
-            - { backend_address: 192.168.0.101, backend_port: 80 }
-          ssl: true
-          letsencrypt: false
+Alpine:
+  - 3.10
+  - 3.11
+  - 3.12
+CentOS:
+  - 7.4+
+  - 8
+Debian:
+  - stretch
+  - buster
+Red Hat:
+  - 7.4+
+  - 8
+SUSE/SLES:
+  - 12
+  - 15
+Ubuntu:
+  - xenial
+  - bionic
+  - eoan
+  - focal
 ```
 
-License
--------
+### NGINX Plus
 
-Licensed under the GPLv3 License. See the LICENSE file for details.
+```yaml
+Alpine:
+  - 3.10
+  - 3.11
+  - 3.12
+Amazon Linux:
+  - 2018.03
+Amazon Linux 2:
+  - any
+CentOS:
+  - 7.4+
+  - 8
+Debian:
+  - stretch
+  - buster
+FreeBSD:
+  - 11.2+
+  - 12
+Oracle Linux:
+  - 6.5+
+  - 7.4+
+Red Hat:
+  - 7.4+
+  - 8
+SUSE/SLES:
+  - 12
+  - 15
+Ubuntu:
+  - xenial
+  - bionic
+  - eoan
+  - focal
+```
 
-Author Information
-------------------
+### NGINX Amplify Agent
 
-Hispanico
+```yaml
+Amazon Linux:
+  - 2017.09
+CentOS:
+  - 7
+Debian:
+  - jessie
+  - stretch
+Red Hat:
+  - 7
+Ubuntu:
+  - xenial
+  - bionic
+  - focal
+```
+
+**Note:** You can also use this role to compile NGINX Open Source from source, install NGINX Open Source on compatible yet unsupported platforms, or install NGINX Open Source on BSD systems at your own risk.
+
+## Role Variables
+
+This role has multiple variables. The descriptions and defaults for all these variables can be found in the **[`defaults/main/`](https://github.com/nginxinc/ansible-role-nginx/blob/main/defaults/main/)** folder in the following files:
+
+|Name|Description|
+|----|-----------|
+|**[`main.yml`](https://github.com/nginxinc/ansible-role-nginx/blob/main/defaults/main/main.yml)**|NGINX installation variables|
+|**[`amplify.yml`](https://github.com/nginxinc/ansible-role-nginx/blob/main/defaults/main/amplify.yml)**|NGINX Amplify agent installation variables|
+|**[`linux.yml`](https://github.com/nginxinc/ansible-role-nginx/blob/main/defaults/main/linux.yml)**|Linux installation variables|
+|**[`bsd.yml`](https://github.com/nginxinc/ansible-role-nginx/blob/main/defaults/main/bsd.yml)**|BSD installation variables|
+
+Similarly, descriptions and defaults for preset variables can be found in the **[`vars/`](https://github.com/nginxinc/ansible-role-nginx/blob/main/vars/)** folder in the following files:
+
+|Name|Description|
+|----|-----------|
+|**[`main.yml`](https://github.com/nginxinc/ansible-role-nginx/blob/main/vars/main.yml)**|List of supported NGINX platforms and modules|
+
+## Example Playbooks
+
+Working functional playbook examples can be found in the **[`molecule/common/playbooks/`](https://github.com/nginxinc/ansible-role-nginx/blob/main/molecule/common/playbooks/)** folder in the following files:
+
+|Name|Description|
+|----|-----------|
+|**[`default_converge.yml`](https://github.com/nginxinc/ansible-role-nginx/blob/main/molecule/common/playbooks/default_converge.yml)**|Install a specific version of NGINX and set up logrotate|
+|**[`module_converge.yml`](https://github.com/nginxinc/ansible-role-nginx/blob/main/molecule/common/playbooks/module_converge.yml)**|Install various NGINX supported modules|
+|**[`plus_converge.yml`](https://github.com/nginxinc/ansible-role-nginx/blob/main/molecule/common/playbooks/plus_converge.yml)**|Install NGINX Plus and various NGINX Plus supported modules|
+|**[`source_converge.yml`](https://github.com/nginxinc/ansible-role-nginx/blob/main/molecule/common/playbooks/source_converge.yml)**|Install NGINX from source|
+
+Do note that if you install this repository via Ansible Galaxy, you will have to replace the role variable in the sample playbooks from `ansible-role-nginx` to `nginxinc.nginx`.
+
+## Other NGINX Ansible Collections and Roles
+
+You can find the Ansible NGINX Core collection of roles to install and configure NGINX Open Source, NGINX Plus, and NGINX App Protect [here](https://github.com/nginxinc/ansible-collection-nginx).
+
+You can find the Ansible NGINX configuration role to configure NGINX [here](https://github.com/nginxinc/ansible-role-nginx-config).
+
+You can find the Ansible NGINX App Protect role to install and configure NGINX App Protect [here](https://github.com/nginxinc/ansible-role-nginx-app-protect).
+
+You can find the Ansible NGINX Controller collection of roles to install and configure NGINX Controller [here](https://github.com/nginxinc/ansible-collection-nginx_controller).
+
+You can find the Ansible NGINX Unit role to install NGINX Unit [here](https://github.com/nginxinc/ansible-role-nginx-unit).
+
+## License
+
+[Apache License, Version 2.0](https://github.com/nginxinc/ansible-role-nginx/blob/main/LICENSE)
+
+## Author Information
+
+[Alessandro Fael Garcia](https://github.com/alessfg)
+
+[Grzegorz Dzien](https://github.com/gdzien)
+
+[Tom Gamull](https://github.com/magicalyak)
+
+&copy; [F5 Networks, Inc.](https://www.f5.com/) 2018 - 2021
