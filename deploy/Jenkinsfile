@@ -2,11 +2,11 @@ pipeline {
     agent any
 
  environment {
-      ANSIBLE_CONFIG="${WORKSPACE}/deploy/ansible.cfg"
+      ANSIBLE_CONFIG = "${WORKSPACE}/deploy/ansible.cfg"
     }
 
     parameters {
-      string(name: 'inventory_file', defaultValue: 'dev')
+      string(name: 'inventory_file', defaultValue: 'dev', description: 'Inventory file for the environment to deploy configuration')
     }
 
   stages {
@@ -24,22 +24,13 @@ pipeline {
             git branch: 'main', url: 'https://github.com/ysf00/ansible-project-14.git'
       }
     }
-
-    stage('Prepare Ansible For Execution') {
-      steps {
-          sh 'echo ${WORKSPACE}'
-          sh 'sed -i \'s/roles_path = \\/var\\/lib\\/jenkins\\/workspace/roles_path = \\/var\\/lib\\/jenkins\\/workspace\\/ansible-project-14_main\\/roles /g\' deploy/ansible.cfg'
-      }
-    }
                
-    stage('Run Ansible') {
-      steps {
-
-            ansiblePlaybook become: true, colorized: true, credentialsId: 'test-sg', disableHostKeyChecking: true, installation: 'Ansible', inventory: "inventory/${inventory_file}", playbook: 'playbooks/site.yml', tags: '${ansible_tag}'
-      }
-    }
-    
-
+  
+    stage('Clean workspace on condition (True)') {
+            steps{
+                cleanWs cleanWhenSuccess: false, cleanWhenUnstable: false
+            }
+        }
     
   }
 }
