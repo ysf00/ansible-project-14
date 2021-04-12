@@ -25,6 +25,13 @@ pipeline {
       }
     }
     
+    stage('Prepare Ansible For Execution') {
+      steps {
+          sh 'echo ${WORKSPACE}'
+          sh 'sed -i \'s/roles_path = \\/var\\/lib\\/jenkins\\/workspace/roles_path = \\/var\\/lib\\/jenkins\\/workspace\\/ansible-project-14_main\\/roles /g\' deploy/ansible.cfg'
+      }
+    }
+      
     stage('Execute Ansible') {
       steps {
         ansiblePlaybook credentialsId: 'private-key', disableHostKeyChecking: true, installation: 'ansible', inventory: 'inventory/dev', playbook: 'playbooks/site.yml'
